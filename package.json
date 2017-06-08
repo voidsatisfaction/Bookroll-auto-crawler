@@ -1,0 +1,23 @@
+{
+  "name": "bookrollHack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn run build && node build/index.js",
+    "st": "yarn run ph_build && node build/phantom_js.js",
+    "build": "babel index.js -d build",
+    "ph_build": "babel phantom_js.js -d build"
+  },
+  "dependencies": {
+    "htmlparser2": "^3.9.2",
+    "nightmare": "^2.10.0",
+    "phantomjs": "^2.1.7",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.5.1"
+  }
+}
