@@ -133,30 +133,19 @@ nightmare
           .on('close', cb);
       };
 
-      Promise.all(lists[0].map(function(imgURL, i) {
-        if (!fs.existsSync('./test')) {
-          fs.mkdirSync('./test');
-        }
-        // change file name to jpg numer
-        var fileName = 'a' + i + '.jpg';
-        console.log(download(imgURL, fileName, function(){ console.log('done') })) 
+      return Promise.all(lists.map(function(list, i) {
+        return Promise.all(list.map(function(imgURL, j) {
+          var folder = './lecture' + i;
+          if (!fs.existsSync(folder)) {
+            fs.mkdirSync(folder);
+          }
+          // change file name to jpg numer
+          var url_devide = imgURL.split('/');
+          var f = url_devide[url_devide.length-1];
+          var fileName = folder + '/' + f;
+          return download(imgURL, fileName, function(){ console.log(f) }); 
+        }));
       }));
-
-      // Promise.all(lists.map(function(list, index1) {
-      //   var dir = './lecture' + index1;
-      //   return Promise.all(list.map(function(imageURL, index2) {
-      //     console.log(index2)
-      //     if (!fs.existsSync(dir)){
-      //       fs.mkdirSync(dir);
-      //     }
-      //     var fileName = 'a' + index2 + '.jpg';
-      //     return download(imageURL, fileName);
-      //   }));
-      // }));
-
-      // download(lists[0][0], 'test.jpg', function() {
-      //   console.log('done');
-      // });
     };
 
     /* Actual crawling */
@@ -169,6 +158,9 @@ nightmare
       .then(parseContents)
       .then(parseContentsLists)
       .then(makeFile)
+      .then(function() {
+        console.log('hack finished');
+      });
   })
   .catch(function (error) {
     console.error('Search failed:', error);
