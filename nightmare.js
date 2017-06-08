@@ -6,17 +6,21 @@ var tough = require('tough-cookie');
 var htmlParser = require('htmlparser2');
 var { URL } = require('url');
 
+var loginURL = 'https://bookroll.let.media.kyoto-u.ac.jp/bookroll/login';
 var host = 'https://bookroll.let.media.kyoto-u.ac.jp';
-var contentURL = [];
 
 var JSESSIONID = '';
 
-// good
+var semester = 'https://bookroll.let.media.kyoto-u.ac.jp/bookroll/home/index?firstId=7&beforeId=';
+
+var userId = 'br_u03631';
+var userPassword = 'MjMxZDVi';
+
 nightmare
   /* Login success */
-  .goto('https://bookroll.let.media.kyoto-u.ac.jp/bookroll/login')
-  .type('#userid', 'br_u03631')
-  .type('#password', 'MjMxZDVi')
+  .goto(loginURL)
+  .type('#userid', userId)
+  .type('#password', userPassword)
   .click('#btn-login')
   .wait('#bookroll-dashboard')
   /* Get all Lectures */
@@ -35,8 +39,16 @@ nightmare
     });
 
     var cookiejar = rp.jar();
-    cookiejar.setCookie(session, 'https://bookroll.let.media.kyoto-u.ac.jp/bookroll');
+    cookiejar.setCookie(session, host);
     
+    /* Intro */
+
+    var intro = function(data) {
+      console.log('On processing....');
+      return data;
+    }
+
+    /* Requests */
     var injectURL = function(uri) {
       var sessionOption = {
         method: 'GET',
@@ -92,7 +104,6 @@ nightmare
             return url;
           });
       };
-      // console.log(myContents);
       return Promise.all(myLectures.map(function (lecture) {
           return parseContent(lecture);
         })).then(function(result) {
@@ -101,7 +112,6 @@ nightmare
     };
 
     var parseContentsLists = function(myContents) {
-      console.log(myContents);
       var parseLists = function(listURL) {
         return rp(injectURL(listURL))
           .then(function (html) {
@@ -129,8 +139,6 @@ nightmare
 
     var makeFile = function(lists) {
       var download = function(uri, filename, cb){
-        console.log(uri);
-        console.log(filename);
         return rp(injectImgURL(uri))
           .pipe(fs.createWriteStream(filename))
           .on('close', cb);
@@ -146,38 +154,26 @@ nightmare
           var url_devide = imgURL.split('/');
           var f = url_devide[url_devide.length-1];
           var fileName = folder + '/' + f;
-          return download(imgURL, fileName, function(){ console.log(f) }); 
+          return download(imgURL, fileName, function(){ return; }); 
         }));
       }));
     };
 
-    /* Actual crawling */
-    /* Zenki */ 
-    rp(injectURL('https://bookroll.let.media.kyoto-u.ac.jp/bookroll/home/index?firstId=7&beforeId='))
+    /* Main */
+    rp(injectURL(semester))
+      .then(intro)
       .then(parseLectures)
-      .catch(function (err) {
-        console.error(err);
-      })
       .then(parseContents)
       .then(parseContentsLists)
       .then(makeFile)
+      .catch(function (err) {
+        console.error(err);
+      })
       .then(function() {
-        console.log('hack finished');
+        console.log('Hack finished');
+        console.log('You can exit virtual browser');
       });
   })
   .catch(function (error) {
     console.error('Search failed:', error);
   });
-
-
-/* 
-
-1. nightmare를 이용해서 브라우저 상에서 모든것을 행한다.
-
-대신 goto와 같은 것들을 어떻게 동적으로 설정할 것인가에 대한 의문은 있음
-
-다시 로그인해서 계속 새로운 세션을 만드는 방법도 있고..
-
-2. nightmare로 세션만 유지시키고, 파싱은 http request를 이용해서 하는방법.
-
-*/
