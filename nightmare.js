@@ -79,11 +79,11 @@ nightmare
       var parseContent = function(lecture) {
         return rp(injectURL(lecture))
           .then(function (html) {
-            var url = '';
+            var url = [];
             var parser = new htmlParser.Parser({
               onopentag: (name, attr) => {
                 if(name == 'input' && attr.class == 'viewerUrl') {
-                  url = attr.value;
+                  url.push(attr.value);
                 }
               },
             }, { decodeEntities: true });
@@ -95,10 +95,13 @@ nightmare
       // console.log(myContents);
       return Promise.all(myLectures.map(function (lecture) {
           return parseContent(lecture);
-        }));
+        })).then(function(result) {
+          return Array.prototype.concat.apply([], result);
+        });
     };
 
     var parseContentsLists = function(myContents) {
+      console.log(myContents);
       var parseLists = function(listURL) {
         return rp(injectURL(listURL))
           .then(function (html) {
