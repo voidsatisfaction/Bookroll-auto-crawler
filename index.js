@@ -66,7 +66,8 @@ nightmare
         method: 'GET',
         uri: uri,
         jar: cookiejar,
-        encoding: null
+        encoding: null,
+        timeout: 30*1000,
       };
       return sessionOption;
     };    
@@ -143,28 +144,25 @@ nightmare
     var makeFile = function(lists) {
       var download = function(uri, filename){
         return new Promise(function(resolve, reject) {
-          request(injectImgURL(uri), function(error, response, body) {
-
-            //will be true, body is Buffer( http://nodejs.org/api/buffer.html )
-
-            //do what you want with body
-            //like writing the buffer to a file
-            // fs.writeFile(filename, body, {
-            //     encoding : null
-            // }, function(err) {
-            //   if (err) {
-            //     console.error('There was error on ' + filename);
-            //     console.error(err);
-            //     reject('not success');
-            //   }
-                  
-            //   console.log('It\'s saved!　' + filename);
-            //   resolve('success');
-            // });
-
-            fs.writeFileSync(filename, body);
-            console.log(filename + ' done');
-          })
+          setTimeout(function() {
+            request(injectImgURL(uri), function(error, response, body) {
+              if (error) {
+                console.error(error);
+              }
+              fs.writeFile(filename, body, {
+                  encoding : null
+              }, function(err) {
+                if (err) {
+                  console.error('There was error on ' + filename);
+                  console.error(err);
+                  reject('not success');
+                }
+                    
+                console.log('It\'s saved!　' + filename);
+                resolve('success');
+              });
+            })
+          }, Math.random() * 2 * 1000);
         }) 
       };
 
