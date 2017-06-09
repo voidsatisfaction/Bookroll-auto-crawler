@@ -26,7 +26,8 @@ Bookrollシステムであなたがとっている全ての講座の講義資料
 ## 使用技術
 
 - Nightmare.js(Electornが入ってます)
-- request-promise
+- request-promise / request
+- htmlparser2
 
 ## 課題
 
