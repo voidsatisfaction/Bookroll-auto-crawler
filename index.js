@@ -15,8 +15,8 @@ var semester = 'https://bookroll.let.media.kyoto-u.ac.jp/bookroll/home/index?fir
 
 /* Input your bookroll id and password */
 
-var userId = '';
-var userPassword = '';
+var userId = 'br_u03631';
+var userPassword = 'MjMxZDVi';
 
 nightmare
   /* Login success */
@@ -173,7 +173,8 @@ nightmare
       })
       .then(function() {
         console.log('Hack finished');
-        console.log('You can exit virtual browser');
+        console.log('******You can exit virtual browser*******');
+        return;
       });
   })
   .catch(function (error) {
