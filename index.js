@@ -2,6 +2,7 @@ var Nightmare = require('nightmare');
 var nightmare = Nightmare({ show: true });
 var fs = require('fs');
 var rp = require('request-promise');
+var request = require('request');
 var tough = require('tough-cookie');
 var htmlParser = require('htmlparser2');
 var { URL } = require('url');
@@ -140,10 +141,31 @@ nightmare
     };
 
     var makeFile = function(lists) {
-      var download = function(uri, filename, cb){
-        return rp(injectImgURL(uri))
-          .pipe(fs.createWriteStream(filename))
-          .on('close', cb);
+      var download = function(uri, filename){
+        return new Promise(function(resolve, reject) {
+          request(injectImgURL(uri), function(error, response, body) {
+
+            //will be true, body is Buffer( http://nodejs.org/api/buffer.html )
+
+            //do what you want with body
+            //like writing the buffer to a file
+            // fs.writeFile(filename, body, {
+            //     encoding : null
+            // }, function(err) {
+            //   if (err) {
+            //     console.error('There was error on ' + filename);
+            //     console.error(err);
+            //     reject('not success');
+            //   }
+                  
+            //   console.log('It\'s saved!　' + filename);
+            //   resolve('success');
+            // });
+
+            fs.writeFileSync(filename, body);
+            console.log(filename + ' done');
+          })
+        }) 
       };
 
       return Promise.all(lists.map(function(list, i) {
@@ -156,7 +178,7 @@ nightmare
           var url_devide = imgURL.split('/');
           var f = url_devide[url_devide.length-1];
           var fileName = folder + '/' + f;
-          return download(imgURL, fileName, function(){ return; }); 
+          return download(imgURL, fileName); 
         }));
       }));
     };
@@ -169,6 +191,7 @@ nightmare
       .then(parseContentsLists)
       .then(makeFile)
       .catch(function (err) {
+        console.log('error occured!');
         console.error(err);
       })
       .then(function() {
@@ -180,3 +203,5 @@ nightmare
   .catch(function (error) {
     console.error('Search failed:', error);
   });
+
+/* How to configure all download complete? */
