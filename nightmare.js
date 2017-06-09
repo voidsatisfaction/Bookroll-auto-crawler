@@ -13,8 +13,10 @@ var JSESSIONID = '';
 
 var semester = 'https://bookroll.let.media.kyoto-u.ac.jp/bookroll/home/index?firstId=7&beforeId=';
 
-var userId = 'br_u03631';
-var userPassword = 'MjMxZDVi';
+/* Input your bookroll id and password */
+
+var userId = '';
+var userPassword = '';
 
 nightmare
   /* Login success */
