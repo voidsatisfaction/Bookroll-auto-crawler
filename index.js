@@ -16,8 +16,8 @@ var semester = 'https://bookroll.let.media.kyoto-u.ac.jp/bookroll/home/index?fir
 
 /* Input your bookroll id and password */
 
-var userId = 'br_u03631';
-var userPassword = 'MjMxZDVi';
+var userId = '';
+var userPassword = '';
 
 var success = 0;
 var fail = 0;
