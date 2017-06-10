@@ -19,6 +19,9 @@ var semester = 'https://bookroll.let.media.kyoto-u.ac.jp/bookroll/home/index?fir
 var userId = 'br_u03631';
 var userPassword = 'MjMxZDVi';
 
+var success = 0;
+var fail = 0;
+
 nightmare
   /* Login success */
   .goto(loginURL)
@@ -155,10 +158,12 @@ nightmare
                 if (err) {
                   console.error('There was error on ' + filename);
                   console.error(err);
+                  fail += 1;
                   reject('not success');
                 }
                     
                 console.log('It\'s saved!　' + filename);
+                success += 1;
                 resolve('success');
               });
             })
@@ -193,8 +198,11 @@ nightmare
         console.error(err);
       })
       .then(function() {
-        console.log('Hack finished');
-        console.log('******You can exit virtual browser*******');
+        console.log('******* Hack finished *******');
+        console.log('All files : ' + (success + fail));
+        console.log('Success files : ' + success);
+        console.log('fail files : ' + fail);
+        console.log('******* You can exit virtual browser *******');
         return;
       });
   })
