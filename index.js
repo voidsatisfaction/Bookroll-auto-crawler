@@ -151,6 +151,8 @@ nightmare
             request(injectImgURL(uri), function(error, response, body) {
               if (error) {
                 console.error(error);
+                fail += 1;
+                reject('not success');
               }
               fs.writeFile(filename, body, {
                   encoding : null
